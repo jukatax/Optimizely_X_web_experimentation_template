@@ -16,7 +16,7 @@ class test_000{
         this.confPageRegExp = new RegExp("checkout\/OrderConfirmation" , "i"); // order confirmation page to detect with regexp
         this.isConfirmationPage = this.confPageRegExp.test(window.location.href);
         this.pollForElements = ["header","#someId"];
-            //SET images to be PRELOADED array of strings, LEAVE EMPTY IF NOT REQUIRED
+        //SET images to be PRELOADED array of strings, LEAVE EMPTY IF NOT REQUIRED
         this.imagesToPreload = ["/somePath/toImage.jpg"];
         //EVENT names
         this.eventName = "test_event";
@@ -236,17 +236,17 @@ class test_000{
 
         track.elmInView = this.pollForElements[1]; //used for Impression tracking
 
-        track.clickTrackSnglElem = [{selector : "#ddl-basket" , evName : this.eventName}]; // array of objects {selector : "css_selector" , evName : this.eventName}, leave empty is no tracking required
-        track.clickTrackMltplElem = [{selector : "#stamps li a" , evName : this.eventName_2}]; // array of objects {selector : "css_selector" , evName : this.eventName_2}, leave empty is no tracking required
+        track.clickTrackSnglElem = [{selector : "#ddl-basket" , evName : this.eventName}]; // array of objects {selector : "css_selector" , evName : this.eventName}, leave empty if no click tracking required
+        track.clickTrackMltplElem = [{selector : "#stamps li a" , evName : this.eventName_2}]; // array of objects {selector : "css_selector" , evName : this.eventName_2}, leave empty if no click tracking required
 
-        track.elmsConf = "#Basket-total-cost"; // used to track AOV on confirmation page, uncomment AOV section to use this selector
+        track.elmsConf = "#Basket-total-cost"; // used to track AOV on confirmation page
 
         track.onEvent = navigator.userAgent.match(/(android|mobile|iphone|ipad)/i) ? 'click' : "mousedown";
 
         track.docEl = document.documentElement;
         track.body = document.body;
+        //=== tracking confirmation page - replace `orderConfirmation` with the partial url of your order confirmation page ===
         if (wloc.match(/orderConfirmation/i) && document.cookie.match(this.testName + "=")) {
-            //tracking confirmation page ===========
             window.poll4elementsConf_000 = function () {
                 if (!(document.querySelectorAll(track.elmsConf).length && window.optimizely)) {
                     setTimeout(window.poll4elementsConf_000, 300);
@@ -284,6 +284,7 @@ class test_000{
             };
             window.poll4elementsConf_000();
         }
+        //=== tracking test page - replace `orderConfirmation` with the partial url of your order confirmation page ===
         else if (!wloc.match(/orderConfirmation/i)) {
             window.optimizely = window.optimizely || [];
             // tracking test page ===========
