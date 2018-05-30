@@ -1,12 +1,24 @@
+/*jshint esversion:6*/
 /**
  * Template Created by yuliyanyordanov on 25/07/17.
- * v4.1.1
+ * v4.2.1
  * template runs on all test pages
  * replace the _000 with your _testNumber
  * write your variations in the corresponding function name - v_0/1/2/3/4 where v_0 is control
  * write your tracking - tracking()
  */
-/*jshint esversion:6*/
+(function () { 
+    if ( typeof NodeList.prototype.forEach === "function" ){
+        return false;
+    }
+    NodeList.prototype.forEach = Array.prototype.forEach;
+})();
+(function(){
+    if ( typeof NodeList.prototype.map === "function" ){
+        return false;
+    }
+    NodeList.prototype.map = Array.prototype.map;
+})();
 window.startTime_000 = new Date();
 //=====================================
 class test_000{
@@ -21,23 +33,23 @@ class test_000{
         //EVENT names
         this.eventName = "test_event";
         this.eventName_2 = "test_event_2";
+        this.eventName_impressionTrack = "event_impression";
         //SET TEST POLL TIMEOUT
         this.countStart = 0;
         this.countMax = 6000; //6 seconds ,test and set max countdown interval to reveal the page
         //Log enable and log styles
-        this.logs = Boolean(window.location.search.match(/(test|_qa)/i));
         this.logStyles = "background:#009e9f;color:#fff;";
         this.logStyles_poll = "background:#00539f;color:#fff;";
         this.logStyles_error = "background:#f00;color:#fff;";
         this.logStyles_rendered = "background:#168229;color:#fff;";
         this.logStyles_tracking = "background:#949f00;color:#fff;";
+        this._log = console.log;
+        console.log =  (Boolean((window.location.search.match(/(test|_qa)/i) || document.cookie.match(/debug=/i)))?this._log:(a=>null));
     }
 
     hideTestElements(){
         if(!document.getElementById(this.testName+"styles")) {
-            if(this.logs===true){
-                console.log("\t%c=== %s- hideTestElements() : hiding content ===",this.logStyles,this.testName);
-            }
+            console.log("\t%c=== %s- hideTestElements() : hiding content ===",this.logStyles,this.testName);
             let style = document.createElement("style");
             style.id = this.testName + "styles";
             style.textContent = "body, body > * , body div[style*=visible]{ visibility : hidden!important;}"+
@@ -46,12 +58,12 @@ class test_000{
                 "#yuliloader{position: fixed; z-index : 999; top: calc(50% - 25px); left: calc(50% - 25px);width : 50px;height : 50px;}"+
                 "html body #yuliloader {display : block!important; visibility : visible!important; margin:60px auto;font-size:10px;text-indent: -9999em;border-top: 1.1em solid rgba(0, 83, 159, 0.2);border-right: 1.1em solid rgba(0, 83, 159, 0.2);border-bottom: 1.1em solid rgba(0, 83, 159, 0.2);border-left: 1.1em solid #00539f;-webkit-transform:translateZ(0);-ms-transform: translateZ(0);transform: translateZ(0);-webkit-animation:load8 1.1s infinite linear;animation: load8 1.1s infinite linear;}"+
                 "@-webkit-keyframes load8 {"+
-                    "0% {-webkit-transform: rotate(0deg);transform: rotate(0deg);}"+
-                    "100% {-webkit-transform: rotate(360deg);transform: rotate(360deg);}"+
+                "0% {-webkit-transform: rotate(0deg);transform: rotate(0deg);}"+
+                "100% {-webkit-transform: rotate(360deg);transform: rotate(360deg);}"+
                 "}"+
                 "@keyframes load8 {"+
-                    "0% {-webkit-transform: rotate(0deg);transform: rotate(0deg);}"+
-                    "100% {-webkit-transform: rotate(360deg);transform: rotate(360deg);}"+
+                "0% {-webkit-transform: rotate(0deg);transform: rotate(0deg);}"+
+                "100% {-webkit-transform: rotate(360deg);transform: rotate(360deg);}"+
                 "}";
             document.head.appendChild(style);
             let loader = document.createElement("div");
@@ -65,27 +77,22 @@ class test_000{
             };
             window.appendLoader();
         }else{
-            if(this.logs===true){
-                console.log("\t=== %s- hideTestElements() : content already hidden ===",this.testName);
-            }
+            console.log("\t=== %s- hideTestElements() : content already hidden ===",this.testName);
         }
     }//hideTestElements
 
     showTestElements(){
-        if(this.logs===true){
-            console.log("\t%c=== %s- showTestElements() : Showing content ===",this.logStyles,this.testName);
-        }
+        console.log("\t%c=== %s- showTestElements() : Showing content ===",this.logStyles,this.testName);
         if(document.getElementById(this.testName+"styles")){document.head.removeChild(document.getElementById(this.testName+"styles"));}
         if(document.getElementById("yuliloader")){document.body.removeChild(document.getElementById("yuliloader"));}
         //=== Log rendering time
-        if(this.logs===true){
+
             window.endTime_000 = new Date();
             console.log("\t%c=== %s rendered in: %dms ===\t", this.logStyles_rendered ,this.testName, (window.endTime_000 - window.startTime_000));
-        }
+
     }//showTestElements
 
     init(lvl){
-        //let vm = this;
         try {
             let promise = new Promise((resolve,reject)=>{
                 let changesDone = this.makeChanges(lvl);
@@ -113,9 +120,7 @@ class test_000{
                 "scope": "tracking"
             });
         }finally{
-            if(this.logs===true){
-                console.log("\t%c=== %s- init() :calling showTestElements()... ===",this.logStyles,this.testName);
-            }
+            console.log("\t%c=== %s- init() :calling showTestElements()... ===",this.logStyles,this.testName);
             this.showTestElements();
         }
     }//init
@@ -127,25 +132,42 @@ class test_000{
      ================================================================================*/
     preloadImage(a){
         let preloaded_image = {};
-        a.forEach(function(val,ind){
+        a.forEach((val,ind)=>{
             preloaded_image[ind] = document.createElement("img");
             preloaded_image[ind].id = "preloaded_img_"+ind;
             preloaded_image[ind].setAttribute("src", val);
         });
-        if(this.logs===true){
+        //if(this.logs===true){
             console.log("\t%c=== %s- preloadImage() : Pre-loading images finished ===",this.logStyles,this.testName);
-        }
+        //}
     }//preloadImage
 
     /* ================================================================================
      * @poller() -  poll for the required elements to be on the page
      * @return  Boolean
      ================================================================================*/
-    poller(){
+    /*poller(){
         let elemsArr = [];
         let vm = this;
-        vm.pollForElements.map(function(val,ind){
+        vm.pollForElements.map((val,ind)=>{
             !document.querySelectorAll(vm.pollForElements[ind]).length ? elemsArr.push(1) : null;
+        });
+        return !Boolean(elemsArr.length);
+    }*///poller
+    poller(arr){
+        let elemsArr = [];
+        arr.map(function(val,ind){
+            if(typeof val === "object"){
+                val.map((value,indx)=>{
+                    if(!document.querySelectorAll(val[indx]).length){
+                        elemsArr.push(1);
+                    }
+                });
+            }else{
+                if(!document.querySelectorAll(arr[ind]).length){
+                    elemsArr.push(1);
+                }
+            }
         });
         return !Boolean(elemsArr.length);
     }//poller
@@ -247,7 +269,8 @@ class test_000{
         track.body = document.body;
         //=== tracking confirmation page - replace `orderConfirmation` with the partial url of your order confirmation page ===
         if (wloc.match(/orderConfirmation/i) && document.cookie.match(this.testName + "=")) {
-            window.poll4elementsConf_000 = function () {
+            //tracking confirmation page ===========
+            window.poll4elementsConf_000 =  () => {
                 if (!(document.querySelectorAll(track.elmsConf).length && window.optimizely)) {
                     setTimeout(window.poll4elementsConf_000, 300);
                 } else {
@@ -266,20 +289,20 @@ class test_000{
                     //==============================================================
                     // track confirmation page
                     //==============================================================
-                    vm.triggerOptlyEvent("confirmationPage");
+                    this.triggerOptlyEvent("confirmationPage");
                     //==============================================================
                     // track confirmation after interaction with changed element
                     //==============================================================
-                    if (document.cookie.match(vm.eventName)) {
-                        vm.triggerOptlyEvent("checkoutAfterClick",false);
+                    if (document.cookie.match(this.eventName)) {
+                        this.triggerOptlyEvent("checkoutAfterClick",false);
                     }
-                    if (document.cookie.match(vm.eventName_2)) {
-                        vm.triggerOptlyEvent("checkoutAfterClick_other",false);
+                    if (document.cookie.match(this.eventName_2)) {
+                        this.triggerOptlyEvent("checkoutAfterClick_other",false);
                     }
                     //==============================================================
                     //====================  end tracking code  =====================
                     //==============================================================
-                    vm.expireCookie(vm.testName);
+                    this.expireCookie(this.testName);
                 }
             };
             window.poll4elementsConf_000();
@@ -288,9 +311,7 @@ class test_000{
         else if (!wloc.match(/orderConfirmation/i)) {
             window.optimizely = window.optimizely || [];
             // tracking test page ===========
-            if(vm.logs===true){
-                console.log("\t%c=== %s- tracking() : Tracking clicks now ===",vm.logStyles_tracking,vm.testName);
-            }
+            console.log("\t%c=== %s- tracking() : Tracking clicks now ===",vm.logStyles_tracking,vm.testName);
 
             // 1 - track.clickTrackSnglElem - single event on a single element
             if(track.clickTrackSnglElem.length) {
@@ -325,9 +346,7 @@ class test_000{
      ================================================================================*/
     makeChanges(level){
         this.setSessionCookie(this.testName,'true');
-        if(this.logs===true){
-            console.log("\t%c=== %s- makeChanges() : variation : %s ===",this.logStyles,this.testName,level);
-        }
+        console.log("\t%c=== %s- makeChanges() : variation : %s ===",this.logStyles,this.testName,level);
         //control
         if(level === "control"){
             this.v_0(level);
